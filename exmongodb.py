@@ -36,7 +36,6 @@ def insertProduto(nome,preco,descricao, quant_dispo):
     x = mycol.insert_one(mydict)
     print(x.inserted_id)
 
-
 ### SORTS ###
 def sortUsuarios():
     global mydb
@@ -90,6 +89,31 @@ def deleteVendedor(alvo):
     myquery = {"_id": objInstance}
     colunaVend.delete_one(myquery)
 
+### QUERY ###
+def queryUsuario(alvo):
+    global mydb
+    mycol = mydb.usuario
+    myquery = {"nome": {"$eq": alvo}}
+    mydoc = mycol.find(myquery)
+    for result in mydoc:
+        print(result)
+
+def queryVendedor(alvo):
+    global mydb
+    colunaVend = mydb.vendedor
+    myquery = {"nome": {"$eq": alvo}}
+    mydoc = colunaVend.find(myquery)
+    for result in mydoc:
+        print(result)
+
+def queryProduto(alvo):
+    global mydb
+    colunaProd = mydb.produto
+    myquery = {"nome": {"$eq": alvo}}
+    mydoc = colunaProd.find(myquery)
+    for result in mydoc:
+        print(result)
+
 def show_menu():
     print("""
     1- Lista de usuários \n
@@ -104,7 +128,10 @@ def show_menu():
     10- Deletar usuário \n
     11- Deletar vendedor \n
     12- Deletar produto \n
-    13- Sair \n
+    13- Procurar usuário \n
+    14- Procurar vendedor \n
+    15- Procurar produto \n
+    16- Sair \n
     """)
 
     loop = True
@@ -150,6 +177,15 @@ def show_menu():
             alvo = input("Id do produto a ser excluído: ")
             deleteProduto(alvo)
         elif select == "13":
+            alvo = input("Nome do usuário: ")
+            queryUsuario(alvo)
+        elif select == "14":
+            alvo = input("Nome do vendedor: ")
+            queryVendedor(alvo)
+        elif select == "15":
+            alvo = input("Nome do produto: ")
+            queryProduto(alvo)
+        elif select == "16":
             loop = False
 
 show_menu()
