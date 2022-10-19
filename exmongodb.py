@@ -36,6 +36,15 @@ def insertProduto(nome,preco,descricao, quant_dispo):
     x = mycol.insert_one(mydict)
     print(x.inserted_id)
 
+def insertCarrinho(data, formaPgt, produto, vendedor, usuario):
+    #Insert Produto
+    global mydb
+    mycol = mydb.carrinho
+    print("\n####INSERT CARRINHO####")
+    mydict = {"data": data, "formaPagamento": formaPgt, "produto": [{"id": produto.get("_id"), "nome": produto.get("nome"), "preco": produto.get("preco"), "vendedor": {"id": vendedor.get("_id"), "nome": vendedor.get("nome")}}], "usuario": {"id": usuario.get("_id"), "nome": usuario.get("nome")}}
+    x = mycol.insert_one(mydict)
+    print(x.inserted_id)
+
 ### SORTS ###
 def sortUsuarios():
     global mydb
@@ -63,6 +72,15 @@ def sortProdutos():
     mydoc = colunaProd.find({}, {
         "nome": 1,
         "_id": 1,
+    }).sort("nome")
+    for result in mydoc:
+        print(result)
+        
+def sortCarrinho():
+    global mydb
+    colunaCar = mydb.carrinho
+    mydoc = colunaCar.find({}, {
+        "nome": 1
     }).sort("nome")
     for result in mydoc:
         print(result)
@@ -131,7 +149,9 @@ def show_menu():
     13- Procurar usuário \n
     14- Procurar vendedor \n
     15- Procurar produto \n
-    16- Sair \n
+    16 - Adicionar ao carrinho \n
+    17 - Listar compras \n
+    18- Sair \n
     """)
 
     loop = True
@@ -186,6 +206,13 @@ def show_menu():
             alvo = input("Nome do produto: ")
             queryProduto(alvo)
         elif select == "16":
-            loop = False
+            nome = input("Nome do produto: ")
+            produto = input("Produto: ")
+            formaPgt = input("Forma de pagamento: ")
+            insertCarrinho(nome, produto, formaPgt)
+        elif select == "17":
+            sortCarrinho()
+        elif select == "18":
+            break
 
 show_menu()
