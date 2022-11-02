@@ -1,191 +1,260 @@
+from bson import ObjectId
 import pymongo
 from pymongo.server_api import ServerApi
-from bson.objectid import ObjectId
 
-client = pymongo.MongoClient("mongodb+srv://Mariana:matam1234@cluster0.jgkawuu.mongodb.net/mercadolivre")
+client = pymongo.MongoClient("mongodb+srv://Mariana:MatPetErAt@cluster0.jgkawuu.mongodb.net/test")
 db = client.test
 
 global mydb
 mydb = client.mercadolivre
 
-###INSERT###
-def insertVendedor(nome,email,cnpj):
-    #Insert Vendedor
+
+## SEARCH ##
+def searchVendedores():
     global mydb
     mycol = mydb.vendedor
-    print("\n####INSERT VENDEDOR####")
-    mydict = { "nome": nome,"email":email,"cnpj":cnpj}
-    x = mycol.insert_one(mydict)
-    print(x.inserted_id)
 
-def insertUsuario(nome,email,senha,endereco):
-    #Insert Usuario
+    print("\n##### VENDEDORES #####")
+    vendedores = mycol.find({})
+    vendedoreslista = []
+    for vendedor in vendedores:
+        vendedoreslista.append(vendedor)
+    return print(vendedoreslista)
+
+#searchVendedores()
+
+def searchUsuarios():
     global mydb
     mycol = mydb.usuario
-    print("\n####INSERT USUARIO####")
-    mydict = { "nome": nome,"email":email,"senha":senha,"endereco":endereco,"favoritos": []}
-    x = mycol.insert_one(mydict)
-    print(x.inserted_id)
 
-def insertProduto(nome,preco,descricao, quant_dispo):
-    #Insert Produto
+    print("\n##### USUÁRIOS #####")
+    usuarios = mycol.find({})
+    usuarioslista = []
+    for usuario in usuarios:
+        usuarioslista.append(usuario)
+    return print(usuarioslista)
+
+#searchUsuarios()
+
+def searchProdutos():
     global mydb
     mycol = mydb.produto
-    print("\n####INSERT PRODUTO####")
-    mydict = {"nome": nome, "preco":preco,"descricao":descricao, "quantidade disponível": quant_dispo}
-    x = mycol.insert_one(mydict)
-    print(x.inserted_id)
 
-### SORTS ###
-def sortUsuarios():
-    global mydb
-    colunaUsu = mydb.usuario
-    mydoc = colunaUsu.find({}, {
-        "nome": 1,
-        "_id": 1,
-    }).sort("nome")
-    for result in mydoc:
-        print(result)
+    print("\n##### PRODUTOS #####")
+    produtos = mycol.find({})
+    produtoslista = []
+    for produto in produtos:
+        produtoslista.append(produto)
+    return print(produtoslista)
 
-def sortVendedores():
-    global mydb
-    colunaVend = mydb.vendedor
-    mydoc = colunaVend.find({}, {
-        "nome": 1,
-        "_id": 1,
-    }).sort("nome")
-    for result in mydoc:
-        print(result)
+#searchProdutos()
 
-def sortProdutos():
+def searchCompras():
     global mydb
-    colunaProd = mydb.produto
-    mydoc = colunaProd.find({}, {
-        "nome": 1,
-        "_id": 1,
-    }).sort("nome")
-    for result in mydoc:
-        print(result)
+    mycol = mydb.compra
 
-### DELETE ###
-def deleteUsuario(alvo):
-    global mydb
-    colunaUsu = mydb.usuario
-    objInstance = ObjectId(alvo)
-    myquery = {"_id": objInstance}
-    colunaUsu.delete_one(myquery)
+    print("\n##### COMPRAS ####")
+    compras = mycol.find({})
+    compraslista = []
+    for compra in compras:
+        compraslista.append(compra)
+    return print(compraslista)
 
-def deleteProduto(alvo):
-    global mydb
-    colunaProd = mydb.produto
-    objInstance = ObjectId(alvo)
-    myquery = {"_id": objInstance}
-    colunaProd.delete_one(myquery)
+#searchCompras()
 
-def deleteVendedor(alvo):
-    global mydb
-    colunaVend = mydb.vendedor
-    objInstance = ObjectId(alvo)
-    myquery = {"_id": objInstance}
-    colunaVend.delete_one(myquery)
 
-### QUERY ###
-def queryUsuario(alvo):
+## FIND ##
+def findVendedor(cnpj):
     global mydb
-    mycol = mydb.usuario
-    myquery = {"nome": {"$eq": alvo}}
+    mycol = mydb.vendedor
+
+    print("\n##### VENDEDOR ENCONTRADO #####")
+    myquery = {"cnpj": {"$eq": cnpj}}
     mydoc = mycol.find(myquery)
     for result in mydoc:
         print(result)
 
-def queryVendedor(alvo):
+#findVendedor("12.345.678/0001-00")
+
+def findUsuario(cpf):
     global mydb
-    colunaVend = mydb.vendedor
-    myquery = {"nome": {"$eq": alvo}}
-    mydoc = colunaVend.find(myquery)
+    mycol = mydb.usuario
+
+    print("\n##### USUÁRIO ENCONTRADO #####")
+    myquery = {"cpf": {"$eq": cpf}}
+    mydoc = mycol.find(myquery)
     for result in mydoc:
         print(result)
 
-def queryProduto(alvo):
+#findUsuario("987.654.321.09")
+
+def findProduto(nome):
     global mydb
-    colunaProd = mydb.produto
-    myquery = {"nome": {"$eq": alvo}}
-    mydoc = colunaProd.find(myquery)
+    mycol = mydb.produto
+
+    print("\n##### PRODUTO ENCONTRADO #####")
+    myquery = {"nome": {"$eq": nome}}
+    mydoc = mycol.find(myquery)
     for result in mydoc:
         print(result)
 
-def show_menu():
-    print("""
-    1- Lista de usuários \n
-    2- Lista de vendedores \n
-    3- Lista de produtos \n
-    4- Adicionar novo usuário \n
-    5- Adicionar novo vendedor \n
-    6- Adicionar novo produto \n
-    7- Atualizar usuário \n
-    8- Atualizar vendedor \n
-    9- Atualizar produto \n
-    10- Deletar usuário \n
-    11- Deletar vendedor \n
-    12- Deletar produto \n
-    13- Procurar usuário \n
-    14- Procurar vendedor \n
-    15- Procurar produto \n
-    16- Sair \n
-    """)
+#findProduto("API")
 
-    loop = True
-    while loop:
-        select = input("Escolha a ação desejada: ")
-        if select == "1":
-            sortUsuarios()
-        elif select == "2":
-            sortVendedores()
-        elif select == "3":
-            sortProdutos()
-        elif select == "4":
-            nome = input("Nome do usuário: ")
-            email = input("E-mail do usuário: ")
-            senha = input("Senha do usuário: ")
-            estado = input("Estado: ")
-            cidade = input("Cidade: ")
-            rua = input("Rua: ")
-            bairro = input("Bairro: ")
-            numero = input("Número: ")
-            insertUsuario(nome,email,senha,{"estado": estado, "cidade": cidade, "rua": rua, "bairro": bairro, "numero": numero})
-        elif select == "5":
-            nome = input("Nome do vendedor: ")
-            email = input("E-mail do vendedor: ")
-            cnpj = input("Cnpj do vendedor: ")
-            insertVendedor(nome, email, cnpj)
-        elif select == "6":
-            nome = input("Nome do produto: ")
-            preco = input("Preço do produto: ")
-            descricao = input("Descrição do produto: ")
-            quant_dispo = input("Quantidade disponível do produto: ")
-            insertProduto(nome, preco, descricao, quant_dispo)
-        elif select == "10":
-            sortUsuarios()
-            alvo = input("Id do usuário a ser excluído: ")
-            deleteUsuario(alvo)
-        elif select == "11":
-            sortVendedores()
-            alvo = input("Id do vendedor a ser excluído: ")
-            deleteVendedor(alvo)
-        elif select == "12":
-            sortProdutos()
-            alvo = input("Id do produto a ser excluído: ")
-            deleteProduto(alvo)
-        elif select == "13":
-            alvo = input("Nome do usuário: ")
-            queryUsuario(alvo)
-        elif select == "14":
-            alvo = input("Nome do vendedor: ")
-            queryVendedor(alvo)
-        elif select == "15":
-            alvo = input("Nome do produto: ")
-            queryProduto(alvo)
-        elif select == "16":
-            loop = False
+def findCompra(usuario):
+    global mydb
+    mycol = mydb.compra
 
-show_menu()
+    print("\n##### COMPRA ENCONTRADA #####")
+    myquery = {"usuário": {"$eq": usuario}}
+    mydoc = mycol.find(myquery)
+    for result in mydoc:
+        print(result)
+
+#findCompra("Gerson")
+
+
+## INSERT ##
+def insertUsuario(nome, cpf, email, rua, cidade, estado, bairro):
+    global mydb
+    mycol = mydb.usuario
+
+    print("\n##### INSERT USUARIO #####")
+    mydict = {"nome": nome, "cpf": cpf, "email": email, "endereco": [{"rua": rua, "bairro": bairro, "cidade": cidade, "estado": estado}]}
+    x = mycol.insert_one(mydict)
+    print(x.inserted_id)
+
+#insertUsuario("Diogo Branquinho", "123.456.789.01", "diogo.branquinho@email.com", "Rua Acaraú", "Bela Vista", "Araras", "SP")
+
+def insertVendedor(nome, cnpj, email, rua, cidade, estado, bairro):
+    global mydb
+    mycol = mydb.vendedor
+
+    print("\n##### INSERT VENDEDOR #####")
+    mydict = {"nome": nome, "cnpj": cnpj, "email": email, "endereco": [{"rua": rua, "bairro": bairro, "cidade": cidade, "estado": estado}]}
+    x = mycol.insert_one(mydict)
+    print(x.inserted_id)
+
+#insertVendedor("Maria Clara", "12.345.678/0001-00", "maria.clara@email.com", "Rua Maestro Alexandre", "Planalto", "Santa Cruz do Capibaribe", "PE")
+
+def insertProduto(nome, preco, descricao, quantidade, vendedor):
+    global mydb
+    columnVendedores = mydb.vendedor
+    columnProdutos = mydb.produto
+    findVendedor = columnVendedores.find({"nome": {"$eq": vendedor}}, 
+    {
+        "_id": 1,
+        "nome": 1
+    })
+
+    print("\n##### INSERT PRODUTO #####")
+    createDict = {}
+    for fornecedor in findVendedor:
+        createDict.update(fornecedor)
+        mydict = {"nome": nome, "preco": preco, "descricao": descricao, "quantidade": quantidade, "vendedor": createDict}
+        x = columnProdutos.insert_one(mydict)
+        print(x.inserted_id)
+
+#insertProduto("API", "50.000,00", "Nessa metodologia, o objetivo de ensino é alcançar um alto grau de aprendizado por meio de pesquisas profundas e atividades práticas, sendo estas as responsáveis pelo desenvolvimento e o desempenho do aluno.", "1", "Maria Clara")
+
+def insertCompra(precoTotal, data, formaPgt, produto, usuario):
+    global mydb
+    mycol = mydb.compra
+    columnProdutos = mydb.produto
+    findProduto = columnProdutos.find({"nome": {"$eq": produto}}, 
+    {
+        "_id": 1,
+        "nome": 1,
+        "vendedor": 1
+    })
+
+    print("\n##### INSERT COMPRA #####")
+    produtoDict = {}
+    for fornecedor in findProduto:
+        produtoDict.update(fornecedor)
+        mydict = {"preço total": precoTotal, "data da compra": data, "forma pagamento": formaPgt, "produto": produtoDict, "usuário": usuario}
+        x = mycol.insert_one(mydict)
+        print(x.inserted_id)
+
+#insertCompra("R$ 1200", "01/11/2022", "Débito", "API", "Sakaue")
+
+
+## UPDATE ##
+def updateUsuario(id, nome, cpf, email, rua, cidade, estado, bairro):
+    global mydb
+    mycol = mydb.usuario
+
+    print("\n##### UPDATE USUÁRIO #####")
+    objInstance = ObjectId(id)
+    myquery = {"_id": objInstance}
+    newvalues= {"$set": {"nome": nome, "cpf": cpf, "email": email, "endereco": [{"rua": rua, "bairro": bairro, "cidade": cidade, "estado": estado}]}}
+    mycol.update_one(myquery, newvalues)
+
+#updateUsuario("6361122621196fceba920354", "Gerson", "987.654.321.09", "prof.gerson@email.com", "Rua 1", "Colônia Antônio Aleixo", "Manaus", "AM")
+
+def updateVendedor(id, nome, cnpj, email, rua, cidade, estado, bairro):
+    global mydb
+    mycol = mydb.vendedor
+
+    print("\n##### UPDATE VENDEDOR #####")
+    objInstance = ObjectId(id)
+    myquery = {"_id": objInstance}
+    newvalue = {"$set": {"nome": nome, "cnpj": cnpj, "email": email, "endereco": [{"rua": rua, "bairro": bairro, "cidade": cidade, "estado": estado}]}}
+    mycol.update_one(myquery, newvalue)
+
+#updateVendedor("6361154c82a76298c27e2998", "Taís Salomão", "102.398.475.60", "tais_salomao@email.com", "Rua da Imprensa", "Monte Castelo", "Campo Grande", "MS")
+
+def updateProduto(id, nome, preco, quantidade, descricao, vendedor):
+    global mydb
+    mycol = mydb.produto
+    columnVendedores = mydb.vendedor
+    findVendedor = columnVendedores.find({"nome": {"$eq": vendedor}}, 
+    {
+        "_id": 1,
+        "nome": 1
+    })
+
+    print("\n##### UPDATE PRODUTO #####")
+    createDict = {}
+    for fornecedor in findVendedor:
+        createDict.update(fornecedor)
+        objInstance = ObjectId(id)
+        myquery = {"_id": objInstance}
+        newvalue = {"$set": {"nome": nome, "preco": preco, "descricao": descricao, "quantidade": quantidade, "vendedor": createDict}}
+        mycol.update_one(myquery, newvalue)
+
+#updateProduto("63613245fa706a8e279a9976", "Aprendizagem por Projeto Integrado", "55.000,00", "Metodologia de aprendizado", "3", "Matheus")
+
+
+## DELETE ##
+def deleteUsuario(id):
+    global mydb
+    mycol = mydb.usuario
+
+    print("\n##### DELETE USUÁRIO #####")
+    objInstance = ObjectId(id)
+    myquery = {"_id": objInstance}
+    mycol.delete_one(myquery)
+
+#deleteUsuario("6361122621196fceba920356")
+
+def deleteProduto(id):
+    global mydb
+    mycol = mydb.produto
+
+    print("\n##### DELETE PRODUTO #####")
+    objInstance = ObjectId(id)
+    myquery = {"_id": objInstance}
+    mycol.delete_one(myquery)
+
+#deleteProduto("636134946254f079e64a6553")
+
+def deleteVendedor(id):
+    global mydb
+    mycol = mydb.vendedor
+
+    print("\n##### DELETE VENDEDOR #####")
+    objInstance = ObjectId(id)
+    myquery = {"_id": objInstance}
+    mycol.delete_one(myquery)
+
+#deleteVendedor("6361154c82a76298c27e2998")
